@@ -11,3 +11,5 @@ swap([Z|List],[Z|List1]) :- swap(List,List1).
 
 write_list([X]):-write(X),!.
 write_list([X|Y]):-write(X),write_list(Y).
+
+?-read(N), read_list(A,N), bubblesort(A, B), write_list(B).
