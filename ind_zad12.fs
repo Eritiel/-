@@ -60,6 +60,4 @@ let main argv =
     let input = Seq.toList(Convert.ToString(Console.ReadLine()).Split ' ')
     Console.WriteLine("Элементы, которые встречались от 3-ех раз")
     list1Calc input
-    Console.WriteLine("\nПрограмма закончила свою работу. Press any key to continue")
-    Console.ReadKey()
     0 
