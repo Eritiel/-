@@ -1,63 +1,55 @@
-﻿open System
+open System
 
-let list2Calc (input:list<string>) (list1:list<int>) =
-    let rec findCount (input:list<string>) (elem:int) count =
-        match input with
-        |[] -> count
-        |_ -> 
-                try
-                    if (Convert.ToInt32(input.Head) = elem) then
-                       findCount input.Tail elem (count+1)
-                    else
-                        findCount input.Tail elem count
-                with
-                    | :? Exception -> findCount input.Tail elem count
 
-    let rec finalOutput (input:list<string>) (list1:list<int>) =
-        match list1 with
-        |[] -> ()
-        |_ -> 
-                if((findCount input list1.Head 0) > 2) then
-                    Console.Write(list1.Head.ToString() + "  ")
-                finalOutput input list1.Tail
-    finalOutput input list1
+let rec read_list n = 
+    if n=0 then []
+    else
+    let Head = System.Convert.ToInt32(System.Console.ReadLine())
+    let Tail = read_list (n-1)
+    Head::Tail
 
-let list1Calc (input:list<string>)=
-    let rec findRepeats (list:list<int>) (elem:int) =
-        match list with
-        | [] -> true
-        | _ -> 
-                if(list.Head = elem) then false
-                else findRepeats list.Tail elem
+let read_data = 
+    let n=System.Convert.ToInt32(System.Console.ReadLine())
+    read_list n
 
-    let rec uniqueElems (list1:list<int>) (textBoxCopy:list<string>) =
-        match textBoxCopy with
-        | [] -> list1
-        | _ -> 
-                try
-                    if(findRepeats list1 (Convert.ToInt32(textBoxCopy.Head))) then 
-                        uniqueElems (Convert.ToInt32(textBoxCopy.Head)::list1) textBoxCopy.Tail
+let rec findCount input elem (count:int) =  
+    match input with
+    |[] -> count
+    |head::tail ->  if (head = elem) then
+                        if(count=2) then    
+                            (count+1)       
+                        else                
+                            findCount tail elem (count+1) 
                     else 
-                        uniqueElems list1 textBoxCopy.Tail
-                with
-                    | :? Exception -> uniqueElems list1 textBoxCopy.Tail
+                        findCount tail elem count 
 
-    let rec reverse list =
-        match list with
-        |[] -> []
-        |[x] -> [x]
-        | head::tail -> reverse tail @ [head]
+let findUnique input =
+    let rec isNoRepeats (uniques:list<int>) (elem:int) =
+        match uniques with 
+        |[]-> true 
+        |head::tail-> if(head = elem) then false 
+                      else isNoRepeats tail elem 
+                           
+    let rec fU (input:list<int>) uniques = 
+        match input with
+        |[]-> uniques   
+        |head::tail ->  if(isNoRepeats uniques head) then
+                            fU tail (uniques@[head])
+                        else
+                            fU tail uniques 
 
-    let (list0:list<int>) = uniqueElems [] input
-    let (list1:list<int>) = reverse list0
-    list2Calc input list1
-    ()
-
-[<STAThread>]
+    let rec output (unique:list<int>) = 
+        match unique with
+        |[] -> ()
+        |head::tail -> if ((findCount input head 0) = 3) then Console.Write(head.ToString() + "  ")
+                       output tail
+    
+    output (fU input [])
+    
 [<EntryPoint>]
 let main argv =
-    Console.WriteLine("Введите начальную последовательность(каждый элемент через пробел)")
-    let input = Seq.toList(Convert.ToString(Console.ReadLine()).Split ' ')
-    Console.WriteLine("Элементы, которые встречались от 3-ех раз")
-    list1Calc input
-    0 
+    let input = read_data
+    Console.WriteLine "Элементы, встречающиеся более трёх раз\n"
+    findUnique input
+    Console.ReadKey()
+    0
